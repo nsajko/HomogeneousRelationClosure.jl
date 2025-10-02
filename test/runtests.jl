@@ -74,6 +74,7 @@ end
                     relation_inclusion(a, homogeneous_relation_reflexive_closure!(b))
                 end
             end
+            @test_throws DimensionMismatch homogeneous_relation_reflexive_closure!([0 1])
         end
         @testset "closure, reduction" begin
             for relation ∈ relations
@@ -91,6 +92,7 @@ end
                     homogeneous_relation_reflexive_closure!(homogeneous_relation_reflexive_reduction!(b))
                 end
             end
+            @test_throws DimensionMismatch homogeneous_relation_reflexive_reduction!([0 1])
         end
     end
 end
