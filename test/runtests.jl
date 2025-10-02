@@ -27,9 +27,9 @@ function relation_is_reflexive(a::AbstractMatrix)
 end
 function relation_is_irreflexive(a::AbstractMatrix)
     function f(i)
-        !(Bool(a[i, i])::Bool)
+        Bool(a[i, i])::Bool
     end
-    all(f, square_matrix_axis(a))
+    all(!f, square_matrix_axis(a))
 end
 const relations = let
     function f_0(c)
