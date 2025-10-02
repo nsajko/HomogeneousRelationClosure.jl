@@ -83,7 +83,7 @@ end
             end
             @test_throws DimensionMismatch homogeneous_relation_reflexive_closure!([0 1])
         end
-        @testset "closure, reduction" begin
+        @testset "reduction" begin
             for relation ∈ relations
                 @test let a = copy(relation)
                     a === homogeneous_relation_reflexive_reduction!(a)
