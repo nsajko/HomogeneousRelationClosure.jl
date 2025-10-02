@@ -73,6 +73,13 @@ end
                 @test let a = copy(relation), b = copy(relation)
                     relation_inclusion(a, homogeneous_relation_reflexive_closure!(b))
                 end
+                @test let a = copy(relation)
+                    homogeneous_relation_reflexive_closure!(a)
+                    function g(x::AbstractMatrix)
+                        (axes(relation) == axes(x)) && relation_is_reflexive(x) && relation_inclusion(relation, x)
+                    end
+                    all(Base.Fix1(relation_inclusion, a), Iterators.filter(g, relations))
+                end
             end
             @test_throws DimensionMismatch homogeneous_relation_reflexive_closure!([0 1])
         end
@@ -90,6 +97,14 @@ end
                 @test let a = copy(relation), b = copy(relation)
                     homogeneous_relation_reflexive_closure!(a) ==
                     homogeneous_relation_reflexive_closure!(homogeneous_relation_reflexive_reduction!(b))
+                end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_reflexive_closure!(a)
+                    homogeneous_relation_reflexive_reduction!(b)
+                    function g(x::AbstractMatrix)
+                        (axes(relation) == axes(x)) && (a == homogeneous_relation_reflexive_closure!(copy(x)))
+                    end
+                    all(Base.Fix1(relation_inclusion, b), Iterators.filter(g, relations))
                 end
             end
             @test_throws DimensionMismatch homogeneous_relation_reflexive_reduction!([0 1])
