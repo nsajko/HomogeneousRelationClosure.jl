@@ -1,5 +1,7 @@
 module HomogeneousRelationClosure
     export
+        homogeneous_relation_transitive_closure!,
+        homogeneous_relation_transitive_reduction_of_acyclic!,
         homogeneous_relation_symmetric_closure!,
         homogeneous_relation_symmetric_reduction!,
         homogeneous_relation_reflexive_closure!,
@@ -27,7 +29,6 @@ module HomogeneousRelationClosure
     function homogeneous_relation_reflexive_reduction!(a::AbstractMatrix)
         mutate_diagonal!(zero, a)
     end
-    # TODO: transitive
     function homogeneous_relation_symmetric_closure!(a::AbstractMatrix)
         axis = square_matrix_axis(a)
         for I ∈ eachindex(axis)
@@ -53,6 +54,36 @@ module HomogeneousRelationClosure
                 x_ji = a[j, i]
                 y_ji = (!x_ij) * x_ji
                 a[j, i] = y_ji
+            end
+        end
+        a
+    end
+    function homogeneous_relation_transitive_closure!(a::AbstractMatrix)
+        axis = square_matrix_axis(a)
+        for k ∈ axis
+            for i ∈ axis
+                for j ∈ axis
+                    x_ik = a[i, k]
+                    x_kj = a[k, j]
+                    y_ij = x_ik * x_kj
+                    a[i, j] += y_ij
+                end
+            end
+        end
+        a
+    end
+    function homogeneous_relation_transitive_reduction_of_acyclic!(a::AbstractMatrix)
+        homogeneous_relation_transitive_closure!(a)
+        axis = square_matrix_axis(a)
+        rax = reverse(axis)
+        for k ∈ rax
+            for i ∈ axis
+                for j ∈ axis
+                    x_ik = a[i, k]
+                    x_kj = a[k, j]
+                    y_ij = x_ik * x_kj
+                    a[i, j] *= !y_ij
+                end
             end
         end
         a

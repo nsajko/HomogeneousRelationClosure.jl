@@ -42,6 +42,48 @@ function relation_is_antisymmetric(a::AbstractMatrix)
     axis = square_matrix_axis(a)
     all(!f, Iterators.filter(splat(!=), Iterators.product(axis, axis)))
 end
+function relation_is_transitive(a::AbstractMatrix)
+    function f((i, _, k))
+        Bool(a[i, k])::Bool
+    end
+    function g((i, j, k))
+        Bool(a[i, j])::Bool && Bool(a[j, k])::Bool
+    end
+    axis = square_matrix_axis(a)
+    all(f, Iterators.filter(g, Iterators.product(axis, axis, axis)))
+end
+function relation_is_antitransitive(a::AbstractMatrix)
+    function f((i, _, k))
+        Bool(a[i, k])::Bool
+    end
+    function g((i, j, k))
+        Bool(a[i, j])::Bool && Bool(a[j, k])::Bool
+    end
+    axis = square_matrix_axis(a)
+    all(!f, Iterators.filter(g, Iterators.product(axis, axis, axis)))
+end
+function relation_is_dag(a::AbstractMatrix)
+    # Kahn's algorithm for topological sorting
+    function f(i)
+        all(iszero, @view a[:, i])
+    end
+    axis = square_matrix_axis(a)
+    S = collect(eltype(axis), Iterators.filter(f, axis))
+    b = copy(a)
+    while !isempty(S)
+        n = pop!(S)
+        function g(m)
+            isone(b[n, m])::Bool
+        end
+        for m ∈ Iterators.filter(g, axis)
+            b[n, m] = zero(b[n, m])
+            if all(iszero, @view b[:, m])
+                push!(S, m)
+            end
+        end
+    end
+    iszero(b)
+end
 const LogicalMatrix = Matrix{B}
 const relations = let
     function f_0(c)
@@ -172,6 +214,58 @@ end
                 end
             end
             @test_throws DimensionMismatch homogeneous_relation_symmetric_reduction!([0 1])
+        end
+    end
+    @testset "transitive" begin
+        @testset "closure" begin
+            for relation ∈ relations
+                @test let a = copy(relation)
+                    a === homogeneous_relation_transitive_closure!(a)
+                end
+                @test let a = copy(relation)
+                    relation_is_transitive(homogeneous_relation_transitive_closure!(a))
+                end
+                @test let a = copy(relation)
+                    relation_inclusion(relation, homogeneous_relation_transitive_closure!(a))
+                end
+                @test let a = copy(relation)
+                    homogeneous_relation_transitive_closure!(a)
+                    function g(x::AbstractMatrix)
+                        (axes(relation) == axes(x)) && relation_is_transitive(x) && relation_inclusion(relation, x)
+                    end
+                    all(Base.Fix1(relation_inclusion, a), Iterators.filter(g, relations))
+                end
+            end
+            @test_throws DimensionMismatch homogeneous_relation_transitive_closure!([0 1])
+        end
+        @testset "reduction for acyclic" begin
+            for relation ∈ Iterators.filter(relation_is_dag, relations)
+                @test let a = copy(relation)
+                    a === homogeneous_relation_transitive_reduction_of_acyclic!(a)
+                end
+                @test let a = copy(relation)
+                    relation_is_antitransitive(homogeneous_relation_transitive_reduction_of_acyclic!(a))
+                end
+                @test let a = copy(relation)
+                    relation_inclusion(homogeneous_relation_transitive_reduction_of_acyclic!(a), relation)
+                end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_transitive_closure!(a) ==
+                    homogeneous_relation_transitive_closure!(homogeneous_relation_transitive_reduction_of_acyclic!(b))
+                end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_transitive_closure!(a)
+                    homogeneous_relation_transitive_reduction_of_acyclic!(b)
+                    function f(x::AbstractMatrix)
+                        count(isone, b) ≤ count(isone, x)
+                    end
+                    function g(x::AbstractMatrix)
+                        (axes(relation) == axes(x)) && (a == homogeneous_relation_transitive_closure!(copy(x)))
+                    end
+                    all(f, Iterators.filter(g, relations))
+                end
+            end
+            @test_throws DimensionMismatch homogeneous_relation_transitive_reduction_of_acyclic!([0 1])
         end
     end
 end
