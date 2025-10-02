@@ -6,7 +6,7 @@ module HomogeneousRelationClosure
         x = axes(a, 1)
         y = axes(a, 2)
         if x != y
-            throw(ArgumentError("axes not equal"))
+            throw(DimensionMismatch())
         end
         x
     end
