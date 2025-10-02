@@ -1,3 +1,10 @@
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+BooleanSemiring = "822037a7-5513-4f2d-b5b5-0aad081f9b11"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+BooleanSemiring = "1"
+
+[sources]
+BooleanSemiring = {url = "https://github.com/nsajko/BooleanSemiring.jl"}
