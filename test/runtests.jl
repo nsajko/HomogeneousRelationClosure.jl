@@ -32,6 +32,16 @@ function relation_is_irreflexive(a::AbstractMatrix)
     end
     all(!f, square_matrix_axis(a))
 end
+function relation_is_symmetric(a::AbstractMatrix)
+    a == transpose(a)
+end
+function relation_is_antisymmetric(a::AbstractMatrix)
+    function f((i, j))
+        Bool(a[i, j] * a[j, i])::Bool
+    end
+    axis = square_matrix_axis(a)
+    all(!f, Iterators.filter(splat(!=), Iterators.product(axis, axis)))
+end
 const LogicalMatrix = Matrix{B}
 const relations = let
     function f_0(c)
@@ -110,6 +120,58 @@ end
                 end
             end
             @test_throws DimensionMismatch homogeneous_relation_reflexive_reduction!([0 1])
+        end
+    end
+    @testset "symmetric" begin
+        @testset "closure" begin
+            for relation ∈ relations
+                @test let a = copy(relation)
+                    a === homogeneous_relation_symmetric_closure!(a)
+                end
+                @test let a = copy(relation)
+                    relation_is_symmetric(homogeneous_relation_symmetric_closure!(a))
+                end
+                @test let a = copy(relation)
+                    relation_inclusion(relation, homogeneous_relation_symmetric_closure!(a))
+                end
+                @test let a = copy(relation)
+                    homogeneous_relation_symmetric_closure!(a)
+                    function g(x::AbstractMatrix)
+                        (axes(relation) == axes(x)) && relation_is_symmetric(x) && relation_inclusion(relation, x)
+                    end
+                    all(Base.Fix1(relation_inclusion, a), Iterators.filter(g, relations))
+                end
+            end
+            @test_throws DimensionMismatch homogeneous_relation_symmetric_closure!([0 1])
+        end
+        @testset "reduction" begin
+            for relation ∈ relations
+                @test let a = copy(relation)
+                    a === homogeneous_relation_symmetric_reduction!(a)
+                end
+                @test let a = copy(relation)
+                    relation_is_antisymmetric(homogeneous_relation_symmetric_reduction!(a))
+                end
+                @test let a = copy(relation)
+                    relation_inclusion(homogeneous_relation_symmetric_reduction!(a), relation)
+                end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_symmetric_closure!(a) ==
+                    homogeneous_relation_symmetric_closure!(homogeneous_relation_symmetric_reduction!(b))
+                end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_symmetric_closure!(a)
+                    homogeneous_relation_symmetric_reduction!(b)
+                    function f(x::AbstractMatrix)
+                        count(isone, b) ≤ count(isone, x)
+                    end
+                    function g(x::AbstractMatrix)
+                        (axes(relation) == axes(x)) && (a == homogeneous_relation_symmetric_closure!(copy(x)))
+                    end
+                    all(f, Iterators.filter(g, relations))
+                end
+            end
+            @test_throws DimensionMismatch homogeneous_relation_symmetric_reduction!([0 1])
         end
     end
 end
