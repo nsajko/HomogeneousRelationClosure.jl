@@ -70,8 +70,8 @@ end
                 @test let a = copy(relation)
                     relation_is_reflexive(homogeneous_relation_reflexive_closure!(a))
                 end
-                @test let a = copy(relation), b = copy(relation)
-                    relation_inclusion(a, homogeneous_relation_reflexive_closure!(b))
+                @test let a = copy(relation)
+                    relation_inclusion(relation, homogeneous_relation_reflexive_closure!(a))
                 end
                 @test let a = copy(relation)
                     homogeneous_relation_reflexive_closure!(a)
@@ -91,8 +91,8 @@ end
                 @test let a = copy(relation)
                     relation_is_irreflexive(homogeneous_relation_reflexive_reduction!(a))
                 end
-                @test let a = copy(relation), b = copy(relation)
-                    relation_inclusion(homogeneous_relation_reflexive_reduction!(b), a)
+                @test let a = copy(relation)
+                    relation_inclusion(homogeneous_relation_reflexive_reduction!(a), relation)
                 end
                 @test let a = copy(relation), b = copy(relation)
                     homogeneous_relation_reflexive_closure!(a) ==
