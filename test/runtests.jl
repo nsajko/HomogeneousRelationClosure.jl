@@ -1,5 +1,6 @@
 using HomogeneousRelationClosure
 using Test
+using BooleanSemiring: B
 
 function equal_vectors(l::AbstractVector, r::AbstractVector)
     if l != r
@@ -31,24 +32,25 @@ function relation_is_irreflexive(a::AbstractMatrix)
     end
     all(!f, square_matrix_axis(a))
 end
+const LogicalMatrix = Matrix{B}
 const relations = let
     function f_0(c)
-        mat = Matrix{Float32}(undef, 0, 0)
+        mat = LogicalMatrix(undef, 0, 0)
         reshape(mat, :) .= c
         mat
     end
     function f_1(c)
-        mat = Matrix{Float32}(undef, 1, 1)
+        mat = LogicalMatrix(undef, 1, 1)
         reshape(mat, :) .= c
         mat
     end
     function f_4(c)
-        mat = Matrix{Float32}(undef, 2, 2)
+        mat = LogicalMatrix(undef, 2, 2)
         reshape(mat, :) .= c
         mat
     end
     function f_9(c)
-        mat = Matrix{Float32}(undef, 3, 3)
+        mat = LogicalMatrix(undef, 3, 3)
         reshape(mat, :) .= c
         mat
     end
