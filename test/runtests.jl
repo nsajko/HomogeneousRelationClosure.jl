@@ -1,6 +1,6 @@
 using HomogeneousRelationClosure
 using Test
-using BooleanSemiring: B
+using TwoElementBooleanAlgebra: Boole
 
 function equal_vectors(l::AbstractVector, r::AbstractVector)
     if l != r
@@ -80,7 +80,7 @@ function relation_is_dag(a::AbstractMatrix)
     end
     iszero(b)
 end
-const LogicalMatrix = Matrix{B}
+const LogicalMatrix = Matrix{Boole}
 const relations = let
     function f(c)
         len = length(c)
