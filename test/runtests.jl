@@ -20,17 +20,17 @@ function relation_inclusion(l::AbstractMatrix, r::AbstractMatrix)
     square_matrix_axis(l, r)
     all(splat(≤), zip(l, r))
 end
-function relation_is_reflexive(a::AbstractMatrix)
+function reflexivity_predicate(a::AbstractMatrix, b::Bool)
     function f(i)
         Bool(a[i, i])::Bool
     end
-    all(f, square_matrix_axis(a))
+    all(Base.Fix1(==, b) ∘ f, square_matrix_axis(a))
+end
+function relation_is_reflexive(a::AbstractMatrix)
+    reflexivity_predicate(a, true)
 end
 function relation_is_irreflexive(a::AbstractMatrix)
-    function f(i)
-        Bool(a[i, i])::Bool
-    end
-    all(!f, square_matrix_axis(a))
+    reflexivity_predicate(a, false)
 end
 function relation_is_symmetric(a::AbstractMatrix)
     a == transpose(a)
@@ -42,25 +42,21 @@ function relation_is_antisymmetric(a::AbstractMatrix)
     axis = square_matrix_axis(a)
     all(!f, Iterators.filter(splat(!=), Iterators.product(axis, axis)))
 end
-function relation_is_transitive(a::AbstractMatrix)
+function transitivity_predicate(a::AbstractMatrix, b::Bool)
     function f((i, _, k))
         Bool(a[i, k])::Bool
     end
     function g((i, j, k))
-        Bool(a[i, j])::Bool && Bool(a[j, k])::Bool
+        Bool(a[i, j] * a[j, k])::Bool
     end
     axis = square_matrix_axis(a)
-    all(f, Iterators.filter(g, Iterators.product(axis, axis, axis)))
+    all(Base.Fix1(==, b) ∘ f, Iterators.filter(g, Iterators.product(axis, axis, axis)))
+end
+function relation_is_transitive(a::AbstractMatrix)
+    transitivity_predicate(a, true)
 end
 function relation_is_antitransitive(a::AbstractMatrix)
-    function f((i, _, k))
-        Bool(a[i, k])::Bool
-    end
-    function g((i, j, k))
-        Bool(a[i, j])::Bool && Bool(a[j, k])::Bool
-    end
-    axis = square_matrix_axis(a)
-    all(!f, Iterators.filter(g, Iterators.product(axis, axis, axis)))
+    transitivity_predicate(a, false)
 end
 function relation_is_dag(a::AbstractMatrix)
     # Kahn's algorithm for topological sorting
