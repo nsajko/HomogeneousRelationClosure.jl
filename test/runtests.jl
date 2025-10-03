@@ -86,32 +86,20 @@ function relation_is_dag(a::AbstractMatrix)
 end
 const LogicalMatrix = Matrix{B}
 const relations = let
-    function f_0(c)
-        mat = LogicalMatrix(undef, 0, 0)
+    function f(c)
+        len = length(c)
+        n = isqrt(len)
+        if n * n != len
+            throw(DimensionMismatch())
+        end
+        mat = LogicalMatrix(undef, n, n)
         reshape(mat, :) .= c
         mat
     end
-    function f_1(c)
-        mat = LogicalMatrix(undef, 1, 1)
-        reshape(mat, :) .= c
-        mat
+    function g(n)
+        Iterators.map(f, Iterators.product(ntuple(Returns(0:1), n)...))
     end
-    function f_4(c)
-        mat = LogicalMatrix(undef, 2, 2)
-        reshape(mat, :) .= c
-        mat
-    end
-    function f_9(c)
-        mat = LogicalMatrix(undef, 3, 3)
-        reshape(mat, :) .= c
-        mat
-    end
-    i = Returns(0:1)
-    relations_0 = Iterators.map(f_0, Iterators.product(ntuple(i, 0)...))
-    relations_1 = Iterators.map(f_1, Iterators.product(ntuple(i, 1)...))
-    relations_4 = Iterators.map(f_4, Iterators.product(ntuple(i, 4)...))
-    relations_9 = Iterators.map(f_9, Iterators.product(ntuple(i, 9)...))
-    Iterators.flatten((relations_0, relations_1, relations_4, relations_9))
+    Iterators.flatten(Iterators.map(g, (0, 1, 4, 9)))
 end
 
 @testset "HomogeneousRelationClosure.jl" begin
