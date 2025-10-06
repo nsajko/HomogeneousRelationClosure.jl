@@ -9,7 +9,7 @@
 
 A software package for the Julia programming language implementing *closure* and *reduction* operators for some properties of homogeneous binary relations, such as *reflexivity*, *symmetry* or *transitivity*.
 
-Each homogeneous binary relation is assumed to be represented by a (square, logical) adjacency matrix (`AbstractMatrix`), whose elements support multiplication/conjunction (`*`), addition/disjunction (`+`) and negation (`!`). The element type is intended to be a Boolean algebra, such as provided by the package [TwoElementBooleanAlgebra.jl](https://github.com/nsajko/TwoElementBooleanAlgebra.jl). A fuzzy logic implementing the same operations should also work, in place of a Boolean logic (no idea if there's any application for that).
+Each homogeneous binary relation is assumed to be represented by a (square, logical) adjacency matrix (`AbstractMatrix`), whose elements support multiplication/conjunction (`*`), addition/disjunction (`+`) and negation (`!`). The element type is intended to be a Boolean algebra, such as provided by the package [TwoElementBooleanAlgebra.jl](https://github.com/nsajko/TwoElementBooleanAlgebra.jl). A fuzzy logic implementing the same operations should also work, in place of a Boolean logic (no idea if there's any application for that). Optionally, it is also possible to provide the scalar operations explicitly.
 
 ## Functionality
 
