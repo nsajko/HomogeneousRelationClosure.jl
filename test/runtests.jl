@@ -2,6 +2,39 @@ using HomogeneousRelationClosure
 using Test
 using TwoElementBooleanAlgebra: Boole
 
+module ExampleAlgebraicStructureTypes
+    struct ExampleAlgebraicStructureType
+        x::Float32
+        global function create(x)
+            new(x)
+        end
+    end
+    const example_algebraic_structure = let
+        function z(::ExampleAlgebraicStructureType)
+            create(0)
+        end
+        function o(::ExampleAlgebraicStructureType)
+            create(1)
+        end
+        function p(l::ExampleAlgebraicStructureType, r::ExampleAlgebraicStructureType)
+            create(max(l.x, r.x))
+        end
+        function t(l::ExampleAlgebraicStructureType, r::ExampleAlgebraicStructureType)
+            create(min(l.x, r.x))
+        end
+        function n(x::ExampleAlgebraicStructureType)
+            create(1 - x.x)
+        end
+        (; zero = z, one = o, + = p, * = t, ! = n)
+    end
+    function Base.Bool(x::ExampleAlgebraicStructureType)  # used in tests
+        Bool(x.x)
+    end
+    function Base.:(<)(l::ExampleAlgebraicStructureType, r::ExampleAlgebraicStructureType)  # used in tests
+        l.x < r.x
+    end
+end
+
 function equal_vectors(l::AbstractVector, r::AbstractVector)
     if l != r
         throw("not equal")
@@ -251,6 +284,25 @@ end
             end
             @test_throws DimensionMismatch homogeneous_relation_transitive_reduction_of_acyclic!([0 1])
         end
+    end
+    @testset "relation with custom scalars" begin
+        relation = let ret = Matrix{ExampleAlgebraicStructureTypes.ExampleAlgebraicStructureType}(undef, 4, 4)
+            z = ExampleAlgebraicStructureTypes.create(0)
+            o = ExampleAlgebraicStructureTypes.create(1)
+            ret .= Ref(z)
+            ret[1, 2] = o
+            ret[1, 3] = o
+            ret[2, 4] = o
+            ret[3, 4] = o
+            ret
+        end
+        s = ExampleAlgebraicStructureTypes.example_algebraic_structure
+        @test (homogeneous_relation_reflexive_closure!(copy(relation), s); true;)
+        @test (homogeneous_relation_reflexive_reduction!(copy(relation), s); true;)
+        @test (homogeneous_relation_symmetric_closure!(copy(relation), s); true;)
+        @test (homogeneous_relation_symmetric_reduction!(copy(relation), s); true;)
+        @test (homogeneous_relation_transitive_closure!(copy(relation), s); true;)
+        @test (homogeneous_relation_transitive_reduction_of_acyclic!(copy(relation), s); true;)
     end
 end
 
