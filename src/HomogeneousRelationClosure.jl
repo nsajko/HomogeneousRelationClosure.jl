@@ -66,7 +66,7 @@ module HomogeneousRelationClosure
         a
     end
     """
-        `homogeneous_relation_symmetric_reduction!(a::AbstractMatrix)`
+        homogeneous_relation_symmetric_reduction!(a::AbstractMatrix)
 
     Smallest relation included by the input relation that has the same symmetric closure as the input relation.
 
