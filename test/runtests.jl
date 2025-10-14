@@ -1,5 +1,6 @@
 using HomogeneousRelationClosure
 using Test
+using FixedSizeArrays: FixedSizeMatrix
 
 module ExampleAlgebraicStructureTypes
     struct ExampleAlgebraicStructureType
@@ -31,6 +32,9 @@ module ExampleAlgebraicStructureTypes
     end
     function Base.:(<)(l::ExampleAlgebraicStructureType, r::ExampleAlgebraicStructureType)  # used in tests
         l.x < r.x
+    end
+    function Base.transpose(x::ExampleAlgebraicStructureType)
+        x
     end
 end
 
@@ -185,6 +189,23 @@ const relations = let
 end
 
 @testset "HomogeneousRelationClosure.jl" begin
+    operations = let
+        ops = [
+            homogeneous_relation_reflexive_closure,
+            homogeneous_relation_reflexive_closure!,
+            homogeneous_relation_reflexive_reduction,
+            homogeneous_relation_reflexive_reduction!,
+            homogeneous_relation_symmetric_closure,
+            homogeneous_relation_symmetric_closure!,
+            homogeneous_relation_symmetric_reduction,
+            homogeneous_relation_symmetric_reduction!,
+            homogeneous_relation_transitive_closure,
+            homogeneous_relation_transitive_closure!,
+            homogeneous_relation_transitive_reduction_of_acyclic,
+            homogeneous_relation_transitive_reduction_of_acyclic!,
+        ]
+        reshape(ops, (2, 2, :))
+    end
     @testset "reflexive" begin
         @testset "closure" begin
             for relation ∈ relations
@@ -203,6 +224,9 @@ end
                         (axes(relation) == axes(x)) && relation_is_reflexive(x) && relation_inclusion(relation, x)
                     end
                     all(Base.Fix1(relation_inclusion, a), Iterators.filter(g, relations))
+                end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_reflexive_closure(a) == homogeneous_relation_reflexive_closure!(b)
                 end
             end
             @test_throws DimensionMismatch homogeneous_relation_reflexive_closure!([0 1])
@@ -230,6 +254,9 @@ end
                     end
                     all(Base.Fix1(relation_inclusion, b), Iterators.filter(g, relations))
                 end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_reflexive_reduction(a) == homogeneous_relation_reflexive_reduction!(b)
+                end
             end
             @test_throws DimensionMismatch homogeneous_relation_reflexive_reduction!([0 1])
         end
@@ -252,6 +279,9 @@ end
                         (axes(relation) == axes(x)) && relation_is_symmetric(x) && relation_inclusion(relation, x)
                     end
                     all(Base.Fix1(relation_inclusion, a), Iterators.filter(g, relations))
+                end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_symmetric_closure(a) == homogeneous_relation_symmetric_closure!(b)
                 end
             end
             @test_throws DimensionMismatch homogeneous_relation_symmetric_closure!([0 1])
@@ -282,6 +312,9 @@ end
                     end
                     all(f, Iterators.filter(g, relations))
                 end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_symmetric_reduction(a) == homogeneous_relation_symmetric_reduction!(b)
+                end
             end
             @test_throws DimensionMismatch homogeneous_relation_symmetric_reduction!([0 1])
         end
@@ -304,6 +337,9 @@ end
                         (axes(relation) == axes(x)) && relation_is_transitive(x) && relation_inclusion(relation, x)
                     end
                     all(Base.Fix1(relation_inclusion, a), Iterators.filter(g, relations))
+                end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_transitive_closure(a) == homogeneous_relation_transitive_closure!(b)
                 end
             end
             @test_throws DimensionMismatch homogeneous_relation_transitive_closure!([0 1])
@@ -334,6 +370,9 @@ end
                     end
                     all(f, Iterators.filter(g, relations))
                 end
+                @test let a = copy(relation), b = copy(relation)
+                    homogeneous_relation_transitive_reduction_of_acyclic(a) == homogeneous_relation_transitive_reduction_of_acyclic!(b)
+                end
             end
             @test_throws DimensionMismatch homogeneous_relation_transitive_reduction_of_acyclic!([0 1])
         end
@@ -350,12 +389,16 @@ end
             ret
         end
         s = ExampleAlgebraicStructureTypes.example_algebraic_structure
-        @test (homogeneous_relation_reflexive_closure!(copy(relation), s); true;)
-        @test (homogeneous_relation_reflexive_reduction!(copy(relation), s); true;)
-        @test (homogeneous_relation_symmetric_closure!(copy(relation), s); true;)
-        @test (homogeneous_relation_symmetric_reduction!(copy(relation), s); true;)
-        @test (homogeneous_relation_transitive_closure!(copy(relation), s); true;)
-        @test (homogeneous_relation_transitive_reduction_of_acyclic!(copy(relation), s); true;)
+        for operation ∈ operations
+            @test ((@inferred operation(copy(relation), s)); true;)
+        end
+    end
+    @testset "`FixedSizeMatrix`" begin
+        relation = FixedSizeMatrix{Boole}(undef, 3, 3)
+        for operation ∈ operations
+            @test ((@inferred operation(copy(relation))); true;)
+            @test operation(copy(relation)) isa FixedSizeMatrix{Boole}
+        end
     end
 end
 
