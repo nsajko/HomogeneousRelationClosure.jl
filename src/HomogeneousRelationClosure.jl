@@ -27,7 +27,7 @@ module HomogeneousRelationClosure
     """
         homogeneous_relation_reflexive_closure!(a::AbstractMatrix, [algebraic_structure])
 
-    The smallest reflexive relation that includes `a`.
+    The smallest reflexive relation that includes the input relation `a`.
 
     Mutate `a`. Return `a`.
     """
@@ -38,7 +38,7 @@ module HomogeneousRelationClosure
     """
         homogeneous_relation_reflexive_reduction!(a::AbstractMatrix, [algebraic_structure])
 
-    The smallest relation included by `a` that has the same reflexive closure as `a`.
+    The smallest relation included by the input relation `a` having the same reflexive closure as `a`.
 
     Mutate `a`. Return `a`.
     """
@@ -49,7 +49,7 @@ module HomogeneousRelationClosure
     """
         homogeneous_relation_symmetric_closure!(a::AbstractMatrix, [algebraic_structure])
 
-    The smallest symmetric relation that includes `a`.
+    The smallest symmetric relation that includes the input relation `a`.
 
     Mutate `a`. Return `a`.
     """
@@ -73,7 +73,7 @@ module HomogeneousRelationClosure
     """
         homogeneous_relation_symmetric_reduction!(a::AbstractMatrix, [algebraic_structure])
 
-    Smallest relation included by the input relation that has the same symmetric closure as the input relation.
+    Smallest relation included by the input relation `a` having the same symmetric closure as `a`.
 
     Mutate `a`. Return `a`.
     """
@@ -96,7 +96,7 @@ module HomogeneousRelationClosure
     """
         homogeneous_relation_transitive_closure!(a::AbstractMatrix, [algebraic_structure])
 
-    The smallest transitive relation that includes the input relation.
+    The smallest transitive relation that includes the input relation `a`.
 
     Mutate `a`. Return `a`.
     """
@@ -120,7 +120,7 @@ module HomogeneousRelationClosure
     """
         homogeneous_relation_transitive_reduction_of_acyclic!(a::AbstractMatrix, [algebraic_structure])
 
-    The smallest relation included by the input relation that has the same transitive closure as the input relation.
+    The smallest relation included by the input relation `a` having the same transitive closure as `a`.
 
     Silently produces incorrect results in the presence of cycles.
 
