@@ -21,6 +21,8 @@ Each homogeneous binary relation is assumed to be represented by a (square, logi
 
         * Unique.
 
+        * `homogeneous_relation_reflexive_closure(::AbstractMatrix)`
+
         * `homogeneous_relation_reflexive_closure!(::AbstractMatrix)`
 
     * *reflexive reduction*
@@ -28,6 +30,8 @@ Each homogeneous binary relation is assumed to be represented by a (square, logi
         * The smallest relation included by the input relation that has the same reflexive closure as the input relation.
 
         * Unique.
+
+        * `homogeneous_relation_reflexive_reduction(::AbstractMatrix)`
 
         * `homogeneous_relation_reflexive_reduction!(::AbstractMatrix)`
 
@@ -39,6 +43,8 @@ Each homogeneous binary relation is assumed to be represented by a (square, logi
 
         * Unique.
 
+        * `homogeneous_relation_symmetric_closure(::AbstractMatrix)`
+
         * `homogeneous_relation_symmetric_closure!(::AbstractMatrix)`
 
     * *symmetric reduction*
@@ -46,6 +52,8 @@ Each homogeneous binary relation is assumed to be represented by a (square, logi
         * Smallest relation included by the input relation that has the same symmetric closure as the input relation.
 
         * Not unique.
+
+        * `homogeneous_relation_symmetric_reduction(::AbstractMatrix)`
 
         * `homogeneous_relation_symmetric_reduction!(::AbstractMatrix)`
 
@@ -57,6 +65,8 @@ Each homogeneous binary relation is assumed to be represented by a (square, logi
 
         * Unique.
 
+        * `homogeneous_relation_transitive_closure(::AbstractMatrix)`
+
         * `homogeneous_relation_transitive_closure!(::AbstractMatrix)`
 
     * *transitive reduction*
@@ -64,5 +74,7 @@ Each homogeneous binary relation is assumed to be represented by a (square, logi
         * Smallest relation included by the input relation that has the same transitive closure as the input relation.
 
         * Not unique, except for directed acyclic graphs (DAGs).
+
+        * `homogeneous_relation_transitive_reduction_of_acyclic(::AbstractMatrix)`: warning: silently produces incorrect results in the presence of cycles
 
         * `homogeneous_relation_transitive_reduction_of_acyclic!(::AbstractMatrix)`: warning: silently produces incorrect results in the presence of cycles

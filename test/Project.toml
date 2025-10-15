@@ -1,7 +1,9 @@
 [deps]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
+FixedSizeArrays = "3821ddf9-e5b5-40d5-8e25-6813ab96b5e2"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [compat]
 Aqua = "0.8"
+FixedSizeArrays = "1"
 Test = "1.10"
