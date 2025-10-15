@@ -182,11 +182,15 @@ const relations = let
         reshape(mat, :) .= c
         mat
     end
+    function square(n)
+        n * n
+    end
     function g(n)
         Iterators.map(f, Iterators.product(ntuple(Returns(0:1), n)...))
     end
-    Iterators.flatten(Iterators.map(g, (0, 1, 4, 9)))
+    Iterators.flatten(Iterators.map(g ∘ square, 0:4))
 end
+const quite_big = 4
 
 @testset "HomogeneousRelationClosure.jl" begin
     operations = let
@@ -218,6 +222,7 @@ end
                 @test let a = copy(relation)
                     relation_inclusion(relation, homogeneous_relation_reflexive_closure!(a))
                 end
+                (size(relation, 1) < quite_big) &&  # avoid excessive run time
                 @test let a = copy(relation)
                     homogeneous_relation_reflexive_closure!(a)
                     function g(x::AbstractMatrix)
@@ -246,6 +251,7 @@ end
                     homogeneous_relation_reflexive_closure!(a) ==
                     homogeneous_relation_reflexive_closure!(homogeneous_relation_reflexive_reduction!(b))
                 end
+                (size(relation, 1) < quite_big) &&  # avoid excessive run time
                 @test let a = copy(relation), b = copy(relation)
                     homogeneous_relation_reflexive_closure!(a)
                     homogeneous_relation_reflexive_reduction!(b)
@@ -273,6 +279,7 @@ end
                 @test let a = copy(relation)
                     relation_inclusion(relation, homogeneous_relation_symmetric_closure!(a))
                 end
+                (size(relation, 1) < quite_big) &&  # avoid excessive run time
                 @test let a = copy(relation)
                     homogeneous_relation_symmetric_closure!(a)
                     function g(x::AbstractMatrix)
@@ -301,6 +308,7 @@ end
                     homogeneous_relation_symmetric_closure!(a) ==
                     homogeneous_relation_symmetric_closure!(homogeneous_relation_symmetric_reduction!(b))
                 end
+                (size(relation, 1) < quite_big) &&  # avoid excessive run time
                 @test let a = copy(relation), b = copy(relation)
                     homogeneous_relation_symmetric_closure!(a)
                     homogeneous_relation_symmetric_reduction!(b)
@@ -331,6 +339,7 @@ end
                 @test let a = copy(relation)
                     relation_inclusion(relation, homogeneous_relation_transitive_closure!(a))
                 end
+                (size(relation, 1) < quite_big) &&  # avoid excessive run time
                 @test let a = copy(relation)
                     homogeneous_relation_transitive_closure!(a)
                     function g(x::AbstractMatrix)
@@ -359,6 +368,7 @@ end
                     homogeneous_relation_transitive_closure!(a) ==
                     homogeneous_relation_transitive_closure!(homogeneous_relation_transitive_reduction_of_acyclic!(b))
                 end
+                (size(relation, 1) < quite_big) &&  # avoid excessive run time
                 @test let a = copy(relation), b = copy(relation)
                     homogeneous_relation_transitive_closure!(a)
                     homogeneous_relation_transitive_reduction_of_acyclic!(b)
