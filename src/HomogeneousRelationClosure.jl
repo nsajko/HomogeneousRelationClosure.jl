@@ -174,7 +174,7 @@ module HomogeneousRelationClosure
             matrix_power = square_matrix_product(matrix_power, a, algebraic_structure)
         end
         ret = matrix_power
-        for _ ∈ axis[2:end]
+        for _ ∈ axis[(2 + shift):end]
             matrix_power = square_matrix_product(matrix_power, a, algebraic_structure)
             ret = ret .+ matrix_power
         end
