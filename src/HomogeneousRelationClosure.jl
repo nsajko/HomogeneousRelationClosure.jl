@@ -166,21 +166,27 @@ module HomogeneousRelationClosure
         c = transpose(a)  # converse relation
         a .* (func.(index_matrix) .+ (!).(a .* c))
     end
+    function _homogeneous_relation_transitive_closure(a::AbstractMatrix, algebraic_structure; shift::Int)
+        axis = square_matrix_axis(a)
+        (; +) = algebraic_structure
+        matrix_power = a
+        for _ ∈ 1:shift
+            matrix_power = square_matrix_product(matrix_power, a, algebraic_structure)
+        end
+        ret = matrix_power
+        for _ ∈ axis[2:end]
+            matrix_power = square_matrix_product(matrix_power, a, algebraic_structure)
+            ret = ret .+ matrix_power
+        end
+        ret
+    end
     """
         homogeneous_relation_transitive_closure(a::AbstractMatrix, [algebraic_structure])
 
     The smallest transitive relation that includes the input relation `a`.
     """
     function homogeneous_relation_transitive_closure(a::AbstractMatrix, algebraic_structure = default_algebraic_structure)
-        axis = square_matrix_axis(a)
-        (; +) = algebraic_structure
-        ret = a
-        matrix_power = a
-        for _ ∈ axis[2:end]
-            matrix_power = square_matrix_product(matrix_power, a, algebraic_structure)
-            ret = ret .+ matrix_power
-        end
-        ret
+        _homogeneous_relation_transitive_closure(a, algebraic_structure; shift = 0)
     end
     """
         homogeneous_relation_transitive_reduction_of_acyclic(a::AbstractMatrix, [algebraic_structure])
@@ -192,9 +198,7 @@ module HomogeneousRelationClosure
     function homogeneous_relation_transitive_reduction_of_acyclic(a::AbstractMatrix, algebraic_structure = default_algebraic_structure)
         square_matrix_axis(a)
         (; *, !) = algebraic_structure
-        # TODO: optimize: eliminate one matrix multiplication
-        b = homogeneous_relation_transitive_closure(a, algebraic_structure)
-        ab = square_matrix_product(a, b, algebraic_structure)
+        ab = _homogeneous_relation_transitive_closure(a, algebraic_structure; shift = 1)
         a .* (!).(ab)
     end
     function mutate_diagonal!(f::F, a::AbstractMatrix) where {F}
