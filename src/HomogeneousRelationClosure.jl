@@ -168,7 +168,6 @@ module HomogeneousRelationClosure
     end
     function _homogeneous_relation_transitive_closure(a::AbstractMatrix, algebraic_structure; shift::Int)
         axis = square_matrix_axis(a)
-        (; +) = algebraic_structure
         matrix_power = a
         for _ ∈ 1:shift
             matrix_power = square_matrix_product(matrix_power, a, algebraic_structure)
@@ -176,7 +175,9 @@ module HomogeneousRelationClosure
         ret = matrix_power
         for _ ∈ axis[(2 + shift):end]
             matrix_power = square_matrix_product(matrix_power, a, algebraic_structure)
-            ret = ret .+ matrix_power
+            ret = let (; +) = algebraic_structure
+                ret .+ matrix_power
+            end
         end
         ret
     end
